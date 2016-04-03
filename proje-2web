@@ -1,0 +1,187 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+using System.Net;
+
+
+namespace ConsoleApplication3
+{
+    class Program
+    {
+        //=================================================================
+        public static int cleaning_p(string s, int k, ref string[] javab)
+        {
+            int j = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i].ToString() == "<".ToString() && s[i + 1].ToString() == "p" && s[i + 2].ToString() == ">")
+                {
+                    i += 3;
+                    while (true)
+                    {
+                        javab[j] = s[i].ToString();
+                        j++; i++;
+                        if (s[i].ToString() == "<".ToString() && s[i + 1].ToString() == "/" && s[i + 2].ToString() == "p" && s[i + 3].ToString() == ">")
+                        { i += 3; break; }
+                    }
+                }
+            }
+            k = j;
+            return k;
+        }
+        //=================================================================
+        public static int cleaining_l(ref string[] javab, int k)
+        {
+
+            int j = 0;
+            for (int i = 0; i < k; i++)
+            {
+                if (javab[i].ToString() == "<".ToString() && javab[i + 1].ToString() == "a")
+                {
+                    javab[i] = " ";
+                    javab[i + 1] = " ";
+                    i += 2;
+                    while (true)
+                    {
+                        javab[i] = " ";
+                        i++;
+                        if (javab[i].ToString() == "<".ToString() && javab[i + 1].ToString() == "/" && javab[i + 2].ToString() == "a" && javab[i + 3].ToString() == ">")
+                        {
+                            javab[i] = " "; javab[i + 1] = " "; javab[i + 2] = " "; javab[i + 3] = " ";
+                            i += 3; break;
+                        }
+                    }
+                }
+            }
+            k = j; return k;
+        }
+        //=================================================================
+        public static int text4(ref string[] s, int k, ref string[] javab)
+        {
+            int j = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i].ToString() == "<".ToString() && s[i + 1].ToString() == "s" && s[i + 2].ToString() == ">")
+                { i += 3; while (true) { javab[j] = s[i].ToString(); j++; i++; if (s[i].ToString() == "<".ToString() && s[i + 1].ToString() == "/" && s[i + 2].ToString() == "s" && s[i + 3].ToString() == ">") { i += 3; break; } } }
+            }
+            k = j;
+            return k;
+        }
+        //=================================================================
+        public static void clean(ref string[] s)
+        {
+            /* clean== "<li>","</li>"    "<ul>,</ul> "</strong>" "</div>"*/
+            for (int i = 0; i < s.Length; i++)
+            {
+                if ((s[i].ToString() == "<".ToString() && s[i + 1].ToString() == "l" && s[i + 2].ToString() == "i" && s[i + 3].ToString() == ">") || (s[i].ToString() == "<".ToString() && s[i + 1].ToString() == "u" && s[i + 2].ToString() == "l" && s[i + 3].ToString() == ">"))
+                    for (int j = 0; j <= 4; j++) s[i + j] = "";
+                if ((s[i].ToString() == "<".ToString() && s[i + 1].ToString() == "/" && s[i + 2].ToString() == "l" && s[i + 3].ToString() == "i" && s[i + 4].ToString() == ">") || (s[i].ToString() == "<".ToString() && s[i + 1].ToString() == "/" && s[i + 2].ToString() == "u" && s[i + 3].ToString() == "l" && s[i + 4].ToString() == ">"))
+                    for (int j = 0; j <= 5; j++)
+                        s[i + j] = "";
+                if (s[i].ToString() == "<" && s[i + 1].ToString() == "/" && s[i + 2].ToString() == "s" && s[i + 3].ToString() == "t" && s[i + 4].ToString() == "r" && s[i + 5].ToString() == "o" && s[i + 6].ToString() == "n" && s[i + 7].ToString() == "g" && s[i + 8].ToString() == ">")
+                    for (int j = 0; j <= 9; j++)
+                        s[i + j] = "";
+                if (s[i].ToString() == "<" && s[i + 1].ToString() == "/" && s[i + 2].ToString() == "d" && s[i + 3].ToString() == "i" && s[i + 4].ToString() == "v" && s[i + 5].ToString() == ">")
+                    for (int j = 0; j <= 6; j++)
+                        s[i + j] = "".ToString();
+            }
+        }
+        //=================================================================
+        public static string source(string x)//get source of page
+        {
+            var html = new System.Net.WebClient().DownloadString(x);
+            string str = html.ToString();
+            return str;
+        }
+        static void Main(string[] args)
+        {
+            string aa = "--------------------------------------------------------------" + "\n";
+            string w = "[Please Enter your web address like  ( http://www.google.com ) " + "\n" + "in the first line type first web address in the next line type second address] " + "\n";// +"-----------------------------------------------------" + "\n";
+            Console.Write(aa + w + aa);
+            string add1 =  Console.ReadLine();
+            string add2 =  Console.ReadLine();
+            //-----------------------------------------
+            string w1 = source(add1);
+            string w2 = source(add2);
+            //-----------------------------------------
+            int k1 = 0, k2 = 0;
+            string[] jvb = new string[w1.Length / 5];
+            string[] jvb2 = new string[w2.Length / 5];
+            //-----------------------------------------
+            // return text bwtwin <prop and </p>
+
+            k1 = cleaning_p(w1, k1, ref jvb);
+            k2 = cleaning_p(w2, k2, ref jvb2);
+            //----------------------------------------
+            // clean links
+
+            k1 = cleaining_l(ref jvb, k1);
+            k2 = cleaining_l(ref jvb2, k2);
+            //---------------------------------------- 
+            List<string >st1=new List<string>();
+            string ff = "";
+            for (int i = 0; true; i++)
+            {
+                if (jvb[i] == null) break;
+
+                if(jvb[i]!="\n")
+                ff += jvb[i];
+                
+                if (jvb[i].ToString() == " ")
+                {
+                    if (ff == " ") { }
+                    else if (ff == "") { }
+                    else if (ff == "script") { }
+                    else if (ff == "am") { }
+                    else if (ff == "is") { }
+                    else if (ff == "are") { }
+                    else if (ff == "a") { }
+                    else if (ff == ".") { }
+                    else { st1.Add(ff); }
+                     
+                    ff = "";
+                }
+            }
+            //---------------------------------
+            List<string >st2=new List<string>();
+            string aaa = "";
+            for (int i = 0; true; i++)
+            {
+                if (jvb[i] == null) break;
+
+                if (jvb[i] != "\n")
+                    aaa += jvb[i];
+
+                if (jvb[i].ToString() == " ")
+                {
+                    if (aaa == " ") { }
+                    else if (aaa == "") { }
+                    else if (aaa == "script") { }
+                    else if (aaa== "am") { }
+                    else if (aaa == "is") { }
+                    else if (aaa == "are") { }
+                    else if (aaa == "a") { }
+                    else if (aaa == ".") { }
+                    else { st2.Add(aaa); }
+
+                    aaa = "";
+                }
+            }
+            //-----------------------------------
+            int qq = 0,dd=0;
+            for (int i = 0; i < st1.Count; i++)
+            {
+                for (int j = 0; j < st2.Count; j++)
+                {
+                    if (st1[i] == st2[j]) qq++;
+                }
+                if (qq > 0) dd++; qq = 0;
+            }
+            //---------------------------
+            Console.Write(((dd / st1.Count) * (100)).ToString() + " % Similer ");
+        }
+    }
+}
